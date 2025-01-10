@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +8,8 @@
     <title>Corresponding Node</title>
 </head>
 <body>
+    <h1>Corresponding Node Example</h1>
+
     <div id="dom1">
         <main>
             <h1>Heading</h1>
@@ -18,48 +22,59 @@
 
     <div id="dom2">
         <main>
-            <h1>Heading2</h1>
-            <div>
-                <h3>test5 <strong>strong</strong></h3>
-                <p><img src="img.png" alt="image"></p>
-            </div>
+            <article>
+                <h1>Heading2</h1>
+                <section>
+                    <img src="img.png" alt="image" />
+                    <h3>test5 <strong>strong</strong></h3>
+                </section>
+            </article>
         </main>
     </div>
 
+    <pre id="output" style="background: #f9f9f9; border: 1px solid #ccc; padding: 10px;"></pre>
+
     <script>
-        /**
-         * Finds the corresponding node in the second tree for a given node in the first tree.
-         * @param {HTMLElement} tree1Root - The root node of the first tree.
-         * @param {HTMLElement} tree2Root - The root node of the second tree.
-         * @param {HTMLElement} targetNode - The node in the first tree to find the corresponding node for.
-         * @returns {HTMLElement} The corresponding node in the second tree.
-         */
-        function correspondingNode(tree1Root, tree2Root, targetNode) {
-            if (tree1Root === targetNode) {
-                return tree2Root;
+        // correspondingNode function
+        function correspondingNode(tree1, tree2, node) {
+            const path = [];
+            let current = node;
+
+            // Build the path from the node to the root
+            while (current !== tree1) {
+                const parent = current.parentNode;
+                const index = Array.prototype.indexOf.call(parent.children, current);
+                path.unshift(index);
+                current = parent;
             }
 
-            const tree1Children = Array.from(tree1Root.children);
-            const tree2Children = Array.from(tree2Root.children);
-
-            for (let i = 0; i < tree1Children.length; i++) {
-                const result = correspondingNode(tree1Children[i], tree2Children[i], targetNode);
-                if (result) {
-                    return result;
-                }
+            // Traverse tree2 following the same path
+            let result = tree2;
+            for (const index of path) {
+                result = result.children[index];
             }
 
-            return null;
+            return result;
         }
 
-        // Example Usage
-        const dom1 = document.getElementById("dom1").querySelector("main");
-        const dom2 = document.getElementById("dom2").querySelector("main");
+        // Test function
+        function runTests() {
+            const dom1 = document.getElementById("dom1").firstElementChild;
+            const dom2 = document.getElementById("dom2").firstElementChild;
 
-        // Find the corresponding nodes
-        console.log(correspondingNode(dom1, dom2, dom1)); // Should return the entire dom2
-        console.log(correspondingNode(dom1, dom2, dom1.querySelector("h2"))); // <h3>...</h3>
-        console.log(correspondingNode(dom1, dom2, dom1.querySelector("em"))); // <strong>...</strong>
+            const node1 = dom1.querySelector("h2");
+            const corresponding1 = correspondingNode(dom1, dom2, node1);
+
+            const node2 = dom1.querySelector("em");
+            const corresponding2 = correspondingNode(dom1, dom2, node2);
+
+            const output = document.getElementById("output");
+            output.textContent = `Corresponding Node for <h2>: ${corresponding1.outerHTML}\n`;
+            output.textContent += `Corresponding Node for <em>: ${corresponding2.outerHTML}`;
+        }
+
+        // Run tests on page load
+        runTests();
     </script>
 </body>
 </html>
