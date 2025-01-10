@@ -1,16 +1,65 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
 <head>
-	<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corresponding Node</title>
 </head>
-
 <body>
-	<!-- the entire body must be written by student -->
-    <script type="text/javascript" src="./script.js">
-</script>
+    <div id="dom1">
+        <main>
+            <h1>Heading</h1>
+            <div>
+                <h2>test1</h2>
+                <p>test2 <em>emphasis</em></p>
+            </div>
+        </main>
+    </div>
 
+    <div id="dom2">
+        <main>
+            <h1>Heading2</h1>
+            <div>
+                <h3>test5 <strong>strong</strong></h3>
+                <p><img src="img.png" alt="image"></p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        /**
+         * Finds the corresponding node in the second tree for a given node in the first tree.
+         * @param {HTMLElement} tree1Root - The root node of the first tree.
+         * @param {HTMLElement} tree2Root - The root node of the second tree.
+         * @param {HTMLElement} targetNode - The node in the first tree to find the corresponding node for.
+         * @returns {HTMLElement} The corresponding node in the second tree.
+         */
+        function correspondingNode(tree1Root, tree2Root, targetNode) {
+            if (tree1Root === targetNode) {
+                return tree2Root;
+            }
+
+            const tree1Children = Array.from(tree1Root.children);
+            const tree2Children = Array.from(tree2Root.children);
+
+            for (let i = 0; i < tree1Children.length; i++) {
+                const result = correspondingNode(tree1Children[i], tree2Children[i], targetNode);
+                if (result) {
+                    return result;
+                }
+            }
+
+            return null;
+        }
+
+        // Example Usage
+        const dom1 = document.getElementById("dom1").querySelector("main");
+        const dom2 = document.getElementById("dom2").querySelector("main");
+
+        // Find the corresponding nodes
+        console.log(correspondingNode(dom1, dom2, dom1)); // Should return the entire dom2
+        console.log(correspondingNode(dom1, dom2, dom1.querySelector("h2"))); // <h3>...</h3>
+        console.log(correspondingNode(dom1, dom2, dom1.querySelector("em"))); // <strong>...</strong>
+    </script>
 </body>
-
 </html>
